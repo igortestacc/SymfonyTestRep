@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Project | {{ parent() }}{% endblock %}
+
+{% block body %}
+
+<h1>{{ title }}</h1>
+
+{# add comments #}
+
+<div>
+    <p>Player UUID: {{ username }}</p>
+</div>
+
+<div>
+    <h3>Numbers:</h3>
+    <ul>
+        {% for number in numbers %}
+            <li>{{ number }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div>
+    <h3>Users:</h3>
+    <ul>
+        {% for user in fullNames %}
+            <li>{{ user.name }} - {{ user.lastName|upper }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
