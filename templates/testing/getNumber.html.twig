@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Project2 | {{ parent() }}{% endblock %}
+
+{% block body %}
+
+    <h1>{{ title }}</h1>
+
+    {# add comments #}
+
+    <div>
+        <h3>Payment status: {{ paymentStatus }}</h3>
+        <p>
+            <a class="url-print-name" href="{{ path('print_name', {
+                'playerUUID': 'super228'
+            }) }}">Go to Print Name</a>
+        </p>
+    </div>
+
+{% endblock %}

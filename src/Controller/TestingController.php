@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class TestingController extends AbstractController
 {
-    #[Route('/')]
+    #[Route('/', name: 'get_number')]
     public function getNumber(): Response
     {
         $number = random_int(0, 2);
@@ -19,12 +19,18 @@ class TestingController extends AbstractController
             2 => "passive",
         };
 
-        return new Response(
-            '<h2>Lucky status: ' . $paymentStatusName . '</h2>'
-        );
+//        $html = $twig->render('testing/getNumber.html.twig', [
+//            'title' => 'Get Number',
+//            'paymentStatus' => $paymentStatusName,
+//        ]);
+
+        return $this->render('testing/getNumber.html.twig', [
+            'title' => 'Get Number',
+            'paymentStatus' => $paymentStatusName,
+        ]);
     }
 
-    #[Route('/print/{playerUUID}')]
+    #[Route('/print/{playerUUID}', name: 'print_name')]
     public function printName(string $playerUUID = null) : Response 
     {
         $display = '<h2>Player UUID: ' . $playerUUID . '</h2>';
@@ -40,9 +46,11 @@ class TestingController extends AbstractController
           ['name' => 'Ihor', 'lastName' => 'Pryschepa'],
         ];
 
+        dump($fullNames);
+
         //return new Response($display);
         return $this->render('testing/printName.html.twig', [
-            'title' => 'Page Name',
+            'title' => 'Print Name',
             'username' => $playerUUID,
             'numbers' => $randomArr,
             'fullNames' => $fullNames,

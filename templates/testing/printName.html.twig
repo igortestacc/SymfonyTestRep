@@ -10,10 +10,14 @@
 
 <div>
     <p>Player UUID: {{ username }}</p>
+    <p>
+        <a class="url-get-number" href="{{ path('get_number') }}">Go to Get Number</a>
+    </p>
 </div>
 
 <div>
     <h3>Numbers:</h3>
+    {{ dump() }}
     <ul>
         {% for number in numbers %}
             <li>{{ number }}</li>
