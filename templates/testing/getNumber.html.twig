@@ -17,4 +17,16 @@
         </p>
     </div>
 
+    <div>
+        <h3>Music:</h3>
+            {% for musicItem in music %}
+                <br>
+                    <p>title: {{ musicItem.title }}</p>
+                    <p>trackCount: {{ musicItem.trackCount }}</p>
+                    <p>genre: {{ musicItem.genre }}</p>
+                    <p>createdAt: {{ musicItem.createdAt|date() }}</p>
+                <br>
+            {% endfor %}
+    </div>
+
 {% endblock %}

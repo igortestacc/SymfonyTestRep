@@ -29,7 +29,8 @@
     <h3>Users:</h3>
     <ul>
         {% for user in fullNames %}
-            <li>{{ user.name }} - {{ user.lastName|upper }}</li>
+            <li>{{ user.name }} - {{ user.lastName|upper }} - \
+                {{ user.ago }} - {{ user.createdAt|ago }}</li>
         {% endfor %}
     </ul>
 </div>

@@ -16,12 +16,13 @@ class DataController extends AbstractController
     {
         $user = [
             'id' => $id,
-            'age' => 22,
+            'createdAt' => new \DateTime('2023-08-05'),
             'phone' => "+380505055050",
             'country' => "UA",
         ];
 
-        $logger->info('Return API response of {userID} user', [
+        // write message to logs
+        $logger->info('Return API response osf {userID} user', [
             'userID' => $id,
         ]);
 

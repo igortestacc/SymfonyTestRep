@@ -2,15 +2,19 @@
 
 namespace App\Controller;
 
+use Knp\Bundle\TimeBundle\DateTimeFormatter;
+use Psr\Cache\CacheItemInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 
 class TestingController extends AbstractController
 {
     #[Route('/', name: 'get_number')]
-    public function getNumber(): Response
+    public function getNumber(HttpClientInterface $httpClient, CacheInterface $cache): Response
     {
         $number = random_int(0, 2);
         $paymentStatusName = match ($number) {
@@ -18,6 +22,13 @@ class TestingController extends AbstractController
             1 => "pending",
             2 => "passive",
         };
+
+        // save data from http request to cache app
+        $responceCache = $cache->get('music', function (CacheItemInterface $cacheItem)  use ($httpClient) {
+            $cacheItem->expiresAfter(3600);
+            $responce = $httpClient->request('GET', 'https://raw.githubusercontent.com/SymfonyCasts/vinyl-mixes/main/mixes.json');
+            return $responce->toArray();
+        });
 
 //        $html = $twig->render('testing/getNumber.html.twig', [
 //            'title' => 'Get Number',
@@ -27,11 +38,12 @@ class TestingController extends AbstractController
         return $this->render('testing/getNumber.html.twig', [
             'title' => 'Get Number',
             'paymentStatus' => $paymentStatusName,
+            'music' => $responceCache,
         ]);
     }
 
     #[Route('/print/{playerUUID}', name: 'print_name')]
-    public function printName(string $playerUUID = null) : Response 
+    public function printName(string $playerUUID = null, DateTimeFormatter $timeFormatter) : Response
     {
         $display = '<h2>Player UUID: ' . $playerUUID . '</h2>';
 
@@ -41,12 +53,16 @@ class TestingController extends AbstractController
         }
 
         $fullNames = [
-          ['name' => 'Igor', 'lastName' => 'Maiboroda'],
-          ['name' => 'Vlad', 'lastName' => 'Somov'],
-          ['name' => 'Ihor', 'lastName' => 'Pryschepa'],
+          ['name' => 'Igor', 'lastName' => 'Maiboroda', 'createdAt' => new \DateTime('2022-10-05')],
+          ['name' => 'Vlad', 'lastName' => 'Somov', 'createdAt' => new \DateTime('2024-08-06')],
+          ['name' => 'Ihor', 'lastName' => 'Pryschepa', 'createdAt' => new \DateTime()],
         ];
 
-        dump($fullNames);
+        //$fullNames - array of objects, key - int index of objects, name - object
+        foreach ($fullNames as $key => $name) {
+            //add to all objects in array $fullNames field 'ago'
+            $fullNames[$key]['ago'] = $timeFormatter->formatDiff($name['createdAt']);
+        }
 
         //return new Response($display);
         return $this->render('testing/printName.html.twig', [
