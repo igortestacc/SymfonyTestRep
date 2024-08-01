@@ -28,7 +28,5 @@ class DataController extends AbstractController
 
         //return new JsonResponse($user);
         return $this->json($user);
-
-        //dd($id);
     }
 }

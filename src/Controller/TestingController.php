@@ -2,19 +2,16 @@
 
 namespace App\Controller;
 
+use App\Service\TestingService;
 use Knp\Bundle\TimeBundle\DateTimeFormatter;
-use Psr\Cache\CacheItemInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-
 
 class TestingController extends AbstractController
 {
     #[Route('/', name: 'get_number')]
-    public function getNumber(HttpClientInterface $httpClient, CacheInterface $cache): Response
+    public function getNumber(TestingService $testingService): Response
     {
         $number = random_int(0, 2);
         $paymentStatusName = match ($number) {
@@ -23,17 +20,12 @@ class TestingController extends AbstractController
             2 => "passive",
         };
 
-        // save data from http request to cache app
-        $responceCache = $cache->get('music', function (CacheItemInterface $cacheItem)  use ($httpClient) {
-            $cacheItem->expiresAfter(3600);
-            $responce = $httpClient->request('GET', 'https://raw.githubusercontent.com/SymfonyCasts/vinyl-mixes/main/mixes.json');
-            return $responce->toArray();
-        });
-
 //        $html = $twig->render('testing/getNumber.html.twig', [
 //            'title' => 'Get Number',
 //            'paymentStatus' => $paymentStatusName,
 //        ]);
+
+        $responceCache = $testingService->getAllInfo();
 
         return $this->render('testing/getNumber.html.twig', [
             'title' => 'Get Number',
