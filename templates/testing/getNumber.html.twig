@@ -29,4 +29,19 @@
             {% endfor %}
     </div>
 
+    <form action="{{ path('api_show_other', {id: '8'}) }}" method="post">
+        <button
+                type="submit"
+                class="up-age"
+                name="direction"
+                value="up"
+        >Up</button>
+        <button
+                type="submit"
+                class="up-age"
+                name="direction"
+                value="down"
+        >Down</button>
+    </form>
+
 {% endblock %}
