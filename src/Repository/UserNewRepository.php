@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\UserNew;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -31,6 +32,14 @@ class UserNewRepository extends ServiceEntityRepository
         }
 
         return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function createOrderedByQueryBuilder(): QueryBuilder
+    {
+        $queryBuilder = $this->createQueryBuilder('usernew')
+            ->orderBy('usernew.id', 'DESC');
+
+        return $queryBuilder;
     }
 
     //    public function findByExampleField($value): array

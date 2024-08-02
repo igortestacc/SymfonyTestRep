@@ -5,10 +5,14 @@ namespace App\Entity;
 use App\Repository\UserNewRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation\Slug;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: UserNewRepository::class)]
 class UserNew
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -25,6 +29,10 @@ class UserNew
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $dateBirth;
+
+    #[ORM\Column(length: 100, unique: true)]
+    #[Slug(fields: ['username'])]
+    private ?string $slug = null;
 
     public function __construct()
     {
@@ -80,6 +88,28 @@ class UserNew
     public function setDateBirth(\DateTimeInterface $dateBirth): static
     {
         $this->dateBirth = $dateBirth;
+
+        return $this;
+    }
+
+    public function upAge(): void
+    {
+        $this->age++;
+    }
+
+    public function downAge(): void
+    {
+        $this->age--;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
 
         return $this;
     }

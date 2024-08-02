@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\UserNew;
 use App\Repository\UserNewRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Pagerfanta;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,8 +39,8 @@ class DataController extends AbstractController
     public function new(EntityManagerInterface $entityManager): Response
     {
         $userDB = new UserNew();
-        $userDB->setUsername('sombo1');
-        $userDB->setAge(18);
+        $userDB->setUsername('sombo super mega');
+        $userDB->setAge(20);
 
         $entityManager->persist($userDB);
         $entityManager->flush();
@@ -55,10 +57,25 @@ class DataController extends AbstractController
         dd($users_new);
     }
 
-    #[Route('/api/show/{id}', name: 'api_show')]
-    public function show(UserNewRepository $newRepository, $id)
+    #[Route('/api/getAll', name: 'api_getAll_new')]
+    public function getAllNew(UserNewRepository $newRepository)
     {
-        $user_new = $newRepository->find($id);
+        $queryBuilder = $newRepository->createOrderedByQueryBuilder();
+        $adapter = new QueryAdapter($queryBuilder);
+        $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage(
+            $adapter,
+            2,
+            10
+        );
+
+        $results = $pagerfanta->getCurrentPageResults();
+        dd($results);
+    }
+
+    #[Route('/api/show/{slug}', name: 'api_show')]
+    public function show(UserNewRepository $newRepository, $slug)
+    {
+        $user_new = $newRepository->findOneBy(['slug' => $slug]);
 
         if (!$user_new) {
             throw $this->createNotFoundException('User new not found');
@@ -68,16 +85,21 @@ class DataController extends AbstractController
     }
 
     #[Route('/api/show_other/{id}/age', name: 'api_show_other', methods: ['POST'])]
-    public function show_other(UserNew $userNew, Request $request)
+    public function show_other(UserNew $userNew, Request $request, EntityManagerInterface $entityManager)
     {
         $direction = $request->get('direction');
 
         if ($direction == 'up') {
-            $userNew->setAge($userNew->getAge() + 1);
+            $userNew->upAge();
         } elseif ($direction == 'down') {
-            $userNew->setAge($userNew->getAge() - 1);
+            $userNew->downAge();
         }
 
-        dd($userNew);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Age was changed!');
+
+        return $this->redirectToRoute('api_show', ['slug' => $userNew->getSlug()]);
+//        return $this->redirectToRoute('get_number');
     }
 }
